@@ -4,7 +4,8 @@
 # Lucas Toshio Ito
 ##########################
 
-### Important Links:
+### Important Links
+
 # Github complete tutorial - https://github.com/freeseek/gtc2vcf
 # Chip manifest and cluster files - https://support.illumina.com/array/downloads.html
 
@@ -42,7 +43,8 @@ wget ftp://webdata2:webdata2@ussd-ftp.illumina.com/downloads/software/iaap/iaap-
 tar xzvf iaap-cli-linux-x64-1.1.0.tar.gz -C $HOME/bin/ iaap-cli-linux-x64-1.1.0/iaap-cli --strip-components=1
 
 
-### Creating paths:
+### Creating paths
+
 BPM="~/path/to/file.bpm"
 CSV="~/path/to/file.csv"
 EGT="~/path/to/file.egt"
@@ -60,6 +62,7 @@ bcftools +gtc2vcf \
   -i -g $IDAT_folder
 
 ### Convert *.idat to *.gtc
+
 # Commands of the software iaap-cli
 CLR_ICU_VERSION_OVERRIDE="$(uconv -V | sed 's/.* //g')" LANG="en_US.UTF-8" $HOME/bin/iaap-cli/iaap-cli \
   gencall -h
@@ -77,6 +80,7 @@ CLR_ICU_VERSION_OVERRIDE="$(uconv -V | sed 's/.* //g')" LANG="en_US.UTF-8" $HOME
   --gender-estimate-call-rate-threshold -0.1
 
 ### Convert *.gtc to *.vcf.gz
+
 bcftools +gtc2vcf \
    --bpm $BPM \
    --egt $EGT \
@@ -103,86 +107,3 @@ gunzip -c $OUTPUT_prefix.vcf.gz > $OUTPUT_prefix.vcf
 plink --vcf $OUTPUT_prefix.vcf --make-bed --out $OUTPUT_prefix
 # ped map
 plink --vcf $OUTPUT_prefix.vcf --recode --out $OUTPUT_prefix
-
-
-
-
-
-
-
-
-# idat to gtc 10 min
-# arqiuvos de egt, bpm e csv baixados do site https://support.illumina.com/array/downloads.html (Infinium Global Screening Array v3.0 Product Files)
-
-bcftools +gtc2vcf \
-  -i -g ~/Documents/Lucas/GB_Brazil_FEP_GSAMDv3_blood/02.iDAT_data_Copy
-
-cd $HOME
-CLR_ICU_VERSION_OVERRIDE="$(uconv -V | sed 's/.* //g')" LANG="en_US.UTF-8" $HOME/bin/iaap-cli/iaap-cli \
-  gencall \
-  ~/Documents/Lucas/GB_Brazil_FEP_GSAMDv3_blood/05.Genomestudio_manifest_and_egt/GSA-24v3-0_A1.bpm \
-  ~/Documents/Lucas/GB_Brazil_FEP_GSAMDv3_blood/05.Genomestudio_manifest_and_egt/GSA-24v3-0_A1_ClusterFile.egt \
-  ~/Documents/Lucas/Results/GTC \
-  --idat-folder ~/Documents/Lucas/GB_Brazil_FEP_GSAMDv3_blood/02.iDAT_data_Copy \
-  --output-gtc \
-  --gender-estimate-call-rate-threshold -0.1
-  
-# gtc to vcf
-
-export PATH="$HOME/bin:$PATH"
-export BCFTOOLS_PLUGINS="$HOME/bin"
-bcftools +gtc2vcf \
-   --bpm ~/Documents/Lucas/GB_Brazil_FEP_GSAMDv3_blood/05.Genomestudio_manifest_and_egt/GSA-24v3-0_A1.bpm \ #BPM manifest file
-   --egt ~/Documents/Lucas/GB_Brazil_FEP_GSAMDv3_blood/05.Genomestudio_manifest_and_egt/GSA-24v3-0_A1_ClusterFile.egt \ #EGT cluster file
-   --csv ~/Documents/Lucas/GB_Brazil_FEP_GSAMDv3_blood/05.Genomestudio_manifest_and_egt/GSA-24v3-0_A1.csv \ #CSV manifest file
-   --gtcs ~/Documents/Lucas/Results/GTC \ #GTC genotype files from directory or list from file
-   --fasta-ref ~/Documents/Lucas/GRCh37/human_g1k_v37.fasta \ #reference sequence in fasta format
-   --extra ~/Documents/Lucas/Results/test_final.tsv | \ #write GTC metadata to a file
-   bcftools sort -T ./bcftools-sort.XXXXXX | \ #sort VCF/BCF files
-   bcftools norm \ #normalize indels
-   --threads 15 \ #number of extra output compression threads [0]
-   --no-version \ #do not append version and command line to the header
-   -Oz \ #Output-compressed VCF
-   -c x \ #CSV manifest file
-   -f ~/Documents/Lucas/GRCh37/human_g1k_v37.fasta | \ #reference sequence in fasta format
-   tee ~/Documents/Lucas/Results/test_final.vcf.gz | \
-   bcftools index \ #index VCF/BCF
-   --threads 15 \ #number of extra output compression threads [0]
-   -ft \ #reference sequence in fasta format
-   --output  ~/Documents/Lucas/Results/test_final.vcf.gz.tbi #output
-   
- 
-## no comments 5 minutos
-
-export PATH="$HOME/bin:$PATH"
-export BCFTOOLS_PLUGINS="$HOME/bin"
-bcftools +gtc2vcf \
-   --bpm ~/Documents/Lucas/GB_Brazil_FEP_GSAMDv3_blood/05.Genomestudio_manifest_and_egt/GSA-24v3-0_A1.bpm \
-   --egt ~/Documents/Lucas/GB_Brazil_FEP_GSAMDv3_blood/05.Genomestudio_manifest_and_egt/GSA-24v3-0_A1_ClusterFile.egt \
-   --csv ~/Documents/Lucas/GB_Brazil_FEP_GSAMDv3_blood/05.Genomestudio_manifest_and_egt/GSA-24v3-0_A1.csv \
-   --gtcs ~/Documents/Lucas/Results/GTC \
-   --fasta-ref ~/Documents/Lucas/GRCh37/human_g1k_v37.fasta \
-   --extra ~/Documents/Lucas/Results/PCS_2019_Psych_KCL.tsv | \
-   bcftools reheader --samples ~/Documents/Lucas/Sample_Sheet.txt | \
-   bcftools sort -T ./bcftools-sort.XXXXXX | \
-   bcftools norm \
-   --threads 15 \
-   --no-version \
-   -Oz \
-   -c x \
-   -f ~/Documents/Lucas/GRCh37/human_g1k_v37.fasta | \
-   tee ~/Documents/Lucas/Results/PCS_2019_Psych_KCL.vcf.gz | \
-   bcftools index \
-   --threads 15 \
-   -ft \
-   --output  ~/Documents/Lucas/Results/PCS_2019_Psych_KCL.vcf.gz.tbi
-   
-wget https://s3.amazonaws.com/plink1-assets/plink_linux_x86_64_20230116.zip
-unzip plink_linux_x86_64_20230116.zip
-rm toy* plink_linux_x86_64_20230116.zip
-
-gunzip -c ~/Documents/Lucas/Results/PCS_2019_Psych_KCL.vcf.gz > ~/Documents/Lucas/Results/PCS_2019_Psych_KCL.vcf
-# bed bim fam
-../plink --vcf ~/Documents/Lucas/Results/PCS_2019_Psych_KCL.vcf --make-bed --out ~/Documents/Lucas/Results/PCS_2019_Psych_KCL
-# ped map
-../plink --vcf ~/Documents/Lucas/Results/PCS_2019_Psych_KCL.vcf --make-bed --out ~/Documents/Lucas/Results/PCS_2019_Psych_KCL
