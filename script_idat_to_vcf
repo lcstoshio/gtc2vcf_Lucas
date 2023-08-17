@@ -32,9 +32,9 @@ export BCFTOOLS_PLUGINS="$HOME/bin"
 
 wget -O https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/reference/human_g1k_v37.fasta.gz
 gzip -d human_g1k_v37.fasta.gz
-cp human_g1k_v37.fasta $HOME/Documents/Lucas/GRCh37/
-samtools faidx $HOME/Documents/Lucas/GRCh37/human_g1k_v37.fasta
-bwa index $HOME/Documents/Lucas/GRCh37/human_g1k_v37.fasta ## ~65 minutes to run
+cp human_g1k_v37.fasta $HOME/GRCh37/
+samtools faidx $HOME/GRCh37/human_g1k_v37.fasta
+bwa index $HOME/GRCh37/human_g1k_v37.fasta ## ~65 minutes to run
 
 ### Install the Illumina Array Analysis Platform - Command Line Interface (iaap-cli) 
 
@@ -48,7 +48,7 @@ tar xzvf iaap-cli-linux-x64-1.1.0.tar.gz -C $HOME/bin/ iaap-cli-linux-x64-1.1.0/
 BPM="~/path/to/file.bpm"
 CSV="~/path/to/file.csv"
 EGT="~/path/to/file.egt"
-IDAT_folder="~/path/to/IDAT/folder
+IDAT_folder="~/path/to/IDAT/folder"
 GTC_folder="~/path/to/GTC/folder"
 REF="$HOME/GRCh37/human_g1k_v37.fasta"
 OUT_prefix="~/path/to/output"
