@@ -45,14 +45,14 @@ tar xzvf iaap-cli-linux-x64-1.1.0.tar.gz -C $HOME/bin/ iaap-cli-linux-x64-1.1.0/
 
 ### Creating paths
 
-BPM="~/path/to/file.bpm"
-CSV="~/path/to/file.csv"
-EGT="~/path/to/file.egt"
-IDAT_folder="~/path/to/IDAT/folder"
-GTC_folder="~/path/to/GTC/folder"
-REF="$HOME/GRCh37/human_g1k_v37.fasta"
-OUT_prefix="~/path/to/output"
-SAMPLESHEET="~/path/to/samplesheet"
+BPM=~/path/to/file.bpm
+CSV=~/path/to/file.csv
+EGT=~/path/to/file.egt
+IDAT_folder=~/path/to/IDAT/folder
+GTC_folder=~/path/to/GTC/folder
+REF=~/path/to/ref/file.fasta
+OUT_prefix=~/path/to/output
+SAMPLESHEET=~/path/to/samplesheet
 
 export PATH="$HOME/bin:$PATH"
 export BCFTOOLS_PLUGINS="$HOME/bin"
@@ -85,18 +85,20 @@ bcftools +gtc2vcf \
    --bpm $BPM \
    --egt $EGT \
    --csv $CSV \
-   --gtcs $GTC \
+   --gtcs $GTC_folder \
    --fasta-ref $REF \
    --extra $OUT_prefix.tsv | \
    bcftools reheader --samples $SAMPLESHEET | \
    bcftools sort -T ./bcftools-sort.XXXXXX | \
    bcftools norm \
+   --threads 4 \
    --no-version \
    -Oz \
    -c x \
    -f $REF | \
    tee $OUT_prefix.vcf.gz | \
    bcftools index \
+   --threads 4 \
    -ft \
    --output  $OUT_prefix.vcf.gz.tbi
 
